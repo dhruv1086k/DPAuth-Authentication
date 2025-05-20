@@ -8,10 +8,12 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 connectDB();
 
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ credentials: true }));
 
+// Endpoints
 app.get("/", (req, res) => {
   res.send("working");
 });
