@@ -42,6 +42,8 @@ export const register = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    return res.json({ success: true });
   } catch (err) {
     res.json({ success: false, message: err.message });
   }
@@ -51,5 +53,47 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
+  //   checking for missing details
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: "Email and password are required",
+    });
+  }
 
+  try {
+    const user = await userModel.findOne({ email });
+
+    // checking if user exists
+    if (!user) {
+      return res.json({ success: false, message: "Invalid email" });
+    }
+
+    // checking for correct password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid Password" });
+    }
+
+    // generating token for user
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "7d",
+    }); // creating the token using mongodb _id
+
+    // setting token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // if env is production we will get true otherwise false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
