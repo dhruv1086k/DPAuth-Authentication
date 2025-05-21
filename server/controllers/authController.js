@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/usermodel.js";
 
-// Controller function for User Register
+// ==================================== Controller function for User Register ====================================
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
   //   checking for missing details
@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // creating a new user
-    const user = new userModel.create({
+    const user = new userModel({
       name,
       email,
       password: hashedPassword,
@@ -49,7 +49,7 @@ export const register = async (req, res) => {
   }
 };
 
-// Controller function for User sign in
+// ===================================== Controller function for User sign in ====================================
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -90,6 +90,24 @@ export const login = async (req, res) => {
     });
 
     return res.json({ success: true });
+  } catch (err) {
+    return res.json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// ===================================== Controller function for User logout ====================================
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // if env is production we will get true otherwise false
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
+
+    return res.json({ success: true, message: "Logged Out" });
   } catch (err) {
     return res.json({
       success: false,
