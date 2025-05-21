@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/usermodel.js";
+import transporter from "../config/nodeMailer.js";
 
 // ==================================== Controller function for User Register ====================================
 export const register = async (req, res) => {
@@ -42,6 +43,17 @@ export const register = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    // Sending a welcome mail
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject: "Welcome to DPAuth",
+      text: `Your account has been successfully created using this email: ${email}
+        You’re all set to start building secure and seamless authentication into your apps. If you ever need help or have questions, we’re just a message away.`,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     return res.json({ success: true });
   } catch (err) {
@@ -115,3 +127,5 @@ export const logout = async (req, res) => {
     });
   }
 };
+
+// ================================= Controller function for email verification ==================================
