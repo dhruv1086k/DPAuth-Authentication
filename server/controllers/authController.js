@@ -201,3 +201,56 @@ export const verifyEmail = async (req, res) => {
     res.json({ success: false, message: err.message });
   }
 };
+
+// =============================== controller function for is user loggedin ==================================
+export const isUserAuthenticated = async (req, res) => {
+  try {
+    return res.json({ success: true });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  }
+};
+
+// ============================== controller function for send password reset OTP ================================
+export const sendResetOtp = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.json({ success: false, message: "Email is required" });
+  }
+
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000)); // login to generate reset otp
+
+    user.resetOtp = otp;
+    user.resetOtpExpireAt = Date.now() + 10 * 60 * 1000; // expiry date of reset otp is 10 mins
+
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Your DPAuth Password Reset OTP Code",
+      text: `Hi there,
+        Your One-Time Password (OTP) for resetting your password is:
+        ${otp}
+        Use this code to reset your account password. It’s valid for the next 10 minutes.
+        If you didn’t request this, please ignore this email.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({
+      success: true,
+      message: "Password reset OTP sent on your mail",
+    });
+  } catch (err) {
+    return res.json({ success: false, message: err.message });
+  }
+};
