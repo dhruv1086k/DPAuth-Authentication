@@ -1,7 +1,9 @@
 import React from "react";
 import { assets } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center text-center px-4">
       <div className="max-w-2xl mx-auto text-center">
@@ -30,7 +32,10 @@ const Header = () => {
         </div>
 
         {/* Get Started Button */}
-        <button className="px-8 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
+        <button
+          onClick={() => navigate("/login")}
+          className="px-8 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+        >
           Get Started
         </button>
       </div>
