@@ -30,7 +30,7 @@ authRouter.post("/send-verify-otp", userAuth, sendVerifyOtp);
 authRouter.post("/verify-account", userAuth, verifyEmail);
 
 // --------   /api/auth/is-auth   --------
-authRouter.post("/is-auth", userAuth, isUserAuthenticated);
+authRouter.get("/is-auth", userAuth, isUserAuthenticated);
 // This route serves as an authentication status checker.
 // userAuth middleware will run and it will give {success: true} only if we are using correct token
 // isUserAuthenticated will work only when userAuth will be passed and isUserAuthenticated will only show a {success: true}

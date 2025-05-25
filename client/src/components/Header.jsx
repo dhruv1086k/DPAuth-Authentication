@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
 
 const Header = () => {
+  const { userData } = useContext(AppContext);
+
   const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center text-center px-4">
@@ -19,7 +22,7 @@ const Header = () => {
         {/* Welcome Text */}
         <div className="mb-8">
           <h1 className="text-gray-600 text-lg mb-4 flex items-center justify-center space-x-2">
-            <span>Hey Developer!</span>
+            <span>Hey {userData ? userData.name : "Developer"}!</span>
             <img src={assets.hand_wave} alt="" className="w-8 h-8" />
           </h1>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
