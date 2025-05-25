@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { FaLock, FaUserAlt } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
+import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const { backendUrl, setIsLoggedIn } = useContext(AppContext);
 
   const [state, setState] = useState("signup");
 
@@ -16,6 +21,42 @@ const Login = () => {
 
   const stateChange = () => {
     setState(`${state === "signup" ? "signin" : "signup"}`);
+  };
+
+  const onSubmitHandler = async (e) => {
+    try {
+      e.preventDefault();
+
+      axios.defaults.withCredentials = true; // for sending cookies with the request
+      if (state === "signup") {
+        const { data } = await axios.post(backendUrl + "/api/auth/register", {
+          name,
+          email,
+          password,
+        }); // {data} will store the data coming from this endpoint
+
+        if (data.success) {
+          setIsLoggedIn(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(backendUrl + "/api/auth/login", {
+          email,
+          password,
+        }); // {data} will store the data coming from this endpoint
+
+        if (data.success) {
+          setIsLoggedIn(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   return (
@@ -44,7 +85,7 @@ const Login = () => {
               : "Login to your account"}
           </p>
         </div>
-        <form action="">
+        <form onSubmit={onSubmitHandler}>
           <div className="space-y-6">
             {state === "signup" && (
               // Full Name Input
