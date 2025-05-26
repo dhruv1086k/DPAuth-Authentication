@@ -3,11 +3,31 @@ import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { userData, backendUrl, setUserData, setIsLoggedIn } =
     useContext(AppContext);
+
+  const sendVerificationOtp = async () => {
+    try {
+      axios.defaults.withCredentials = true; // we have to send cookies with this request
+
+      const { data } = await axios.post(
+        backendUrl + "/api/auth/send-verify-otp"
+      );
+
+      if (data.success) {
+        navigate("/email-verify");
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   const logout = async () => {
     try {
@@ -37,7 +57,10 @@ const Navbar = () => {
               <ul className="list-none m-0 p-2 bg-gray-100 text-sm">
                 {/* if user is already verified this will be hidden */}
                 {!userData.isAccountVerified && (
-                  <li className="py-1 px-2 hover:bg-gray-200 cursor-pointer">
+                  <li
+                    onClick={() => sendVerificationOtp()}
+                    className="py-1 px-2 hover:bg-gray-200 cursor-pointer"
+                  >
                     Verify email
                   </li>
                 )}

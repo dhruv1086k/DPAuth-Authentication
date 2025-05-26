@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
+  axios.defaults.withCredentials = true; // we are using this so that with each request cookies will be sent and user will not logout even after reloading webpage
+
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedin, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(false);
