@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 const EmailVerify = () => {
   axios.defaults.withCredentials = true;
   const navigate = useNavigate();
-  const { backendUrl, isLoggedIn, userData, getUserData } =
+  const { backendUrl, isLoggedin, userData, getUserData } =
     useContext(AppContext);
   const inputRefs = React.useRef([]);
 
@@ -56,6 +56,11 @@ const EmailVerify = () => {
       toast.error(err.message);
     }
   };
+
+  //   redirect user to home on revisiting verify-email page
+  useEffect(() => {
+    isLoggedin && userData && userData.isAccountVerified && navigate("/");
+  }, [isLoggedin, userData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-300 via-blue-200 to-purple-200 flex items-center justify-center p-4">
