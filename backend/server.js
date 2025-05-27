@@ -10,7 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 connectDB();
 
-const allowedOrigins = ["http://localhost:5173", "https://dp-auth.netlify.app"]; // frontend Url
+// frontend url's
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://dp-auth.netlify.app"]
+    : ["http://localhost:5173", "https://dp-auth.netlify.app"];
 
 // Middlewares
 app.use(express.json());
