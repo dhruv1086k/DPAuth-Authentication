@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import userModel from "../models/UserModel.js";
+import userModel from "./../models/UserModel.js";
 import transporter from "../config/nodeMailer.js";
 
 // ==================================== Controller function for User Register ====================================
