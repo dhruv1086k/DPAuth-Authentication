@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import userModel from "./../models/UserModel.js";
+import UserModel from "./../models/UserModel.js";
 import transporter from "../config/nodeMailer.js";
 
 // ==================================== Controller function for User Register ====================================
@@ -13,7 +13,7 @@ export const register = async (req, res) => {
 
   try {
     // Checking if user already exists
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res.json({ success: false, message: "User already exists" });
     }
@@ -22,7 +22,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // creating a new user
-    const user = new userModel({
+    const user = new UserModel({
       name,
       email,
       password: hashedPassword,
@@ -74,7 +74,7 @@ export const login = async (req, res) => {
   }
 
   try {
-    const user = await userModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     // checking if user exists
     if (!user) {
@@ -134,7 +134,7 @@ export const sendVerifyOtp = async (req, res) => {
     const { userId } = req.body;
     // userId is added to req.body using a middleware
 
-    const user = await userModel.findById(userId);
+    const user = await UserModel.findById(userId);
     if (user.isAccountVerified) {
       return res.json({ success: false, message: "Account already verified" });
     }
@@ -174,7 +174,7 @@ export const verifyEmail = async (req, res) => {
   }
 
   try {
-    const user = await userModel.findById(userId);
+    const user = await UserModel.findById(userId);
 
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -220,7 +220,7 @@ export const sendResetOtp = async (req, res) => {
   }
 
   try {
-    const user = await userModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -267,7 +267,7 @@ export const resetPassword = async (req, res) => {
   }
 
   try {
-    const user = await userModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
     if (!user) {
       return res.json({ success: false, message: "User not found" });
