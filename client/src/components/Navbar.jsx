@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const [dialogBoxOpen, setDialogBoxOpen] = useState(false);
   const { userData, backendUrl, setUserData, setIsLoggedIn } =
     useContext(AppContext);
 
@@ -42,6 +44,10 @@ const Navbar = () => {
     }
   };
 
+  const handleUserdialog = () => {
+    setDialogBoxOpen(!dialogBoxOpen);
+  };
+
   return (
     <nav className="absolute z-20 top-0 w-full px-6 py-4 border-b border-gray-100">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -51,9 +57,16 @@ const Navbar = () => {
         </div>
 
         {userData ? (
-          <div className="w-8 h-8 flex justify-center items-center rounded-full bg-black text-white relative group">
+          <div
+            className="w-8 h-8 flex justify-center items-center rounded-full bg-black text-white cursor-pointer relative"
+            onClick={handleUserdialog}
+          >
             {userData.name[0].toUpperCase()}
-            <div className="hidden absolute group-hover:block top-0 right-0 z-10 text-black rounded pt-10">
+            <div
+              className={`absolute top-0 right-0 z-10 text-black rounded pt-10 ${
+                dialogBoxOpen ? "block" : "hidden"
+              }`}
+            >
               <ul className="list-none m-0 p-2 bg-gray-100 text-sm">
                 {/* if user is already verified this will be hidden */}
                 {!userData.isAccountVerified && (
