@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const Header = () => {
-  const { userData } = useContext(AppContext);
+  const { userData, isLoggedin } = useContext(AppContext);
 
   const navigate = useNavigate();
   return (
@@ -73,28 +73,34 @@ const Header = () => {
         {/* CTA Button */}
         <div className="relative group">
           <div className="absolute -inset-2 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-all duration-300"></div>
-          <button
-            onClick={() => navigate("/login")}
-            className="relative px-12 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full hover:from-purple-700 hover:via-indigo-700 hover:to-purple-800 text-xl font-bold shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden group"
-          >
-            <span className="relative z-10 flex items-center space-x-2">
-              <span>Get Started</span>
-              <svg
-                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-          </button>
+          {isLoggedin ? (
+            <button className="relative px-12 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full hover:from-purple-700 hover:via-indigo-700 hover:to-purple-800 text-xl font-bold shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden">
+              Howdy😊
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="relative px-12 py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white rounded-full hover:from-purple-700 hover:via-indigo-700 hover:to-purple-800 text-xl font-bold shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden group"
+            >
+              <span className="relative z-10 flex items-center space-x-2">
+                <span>Get Started</span>
+                <svg
+                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            </button>
+          )}
         </div>
       </div>
 
