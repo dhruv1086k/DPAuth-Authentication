@@ -16,6 +16,11 @@ const ResetPassword = () => {
   const [otp, setOtp] = useState(0);
   const [isOtpSubmitted, setIsOtpSubmitted] = useState("");
 
+  // Loading states
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [isOtpLoading, setIsOtpLoading] = useState(false);
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+
   const inputRefs = React.useRef([]);
 
   const handleInput = (e, index) => {
@@ -40,10 +45,22 @@ const ResetPassword = () => {
     });
   };
 
+  // Progress Bar Component
+  const ProgressBar = ({ isLoading }) => (
+    <div
+      className={`absolute top-0 left-0 w-full h-0.5 bg-white/20 overflow-hidden ${
+        isLoading ? "block" : "hidden"
+      }`}
+    >
+      <div className="h-full bg-gradient-to-r from-rose-400 to-pink-400 animate-pulse w-full origin-left transform animate-[loading_1.5s_ease-in-out_infinite]"></div>
+    </div>
+  );
+
   //   Email handler form
   const onSubmitEmail = async (e) => {
     e.preventDefault();
     try {
+      setIsEmailLoading(true);
       const { data } = await axios.post(
         backendUrl + "/api/auth/send-reset-otp",
         {
@@ -55,22 +72,31 @@ const ResetPassword = () => {
       data.success && setIsEmailSent(true);
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setIsEmailLoading(false);
     }
   };
 
   //   otp handler form
   const onSubmitOtp = async (e) => {
     e.preventDefault();
-
-    const otpArray = inputRefs.current.map((e) => e.value);
-    setOtp(otpArray.join(""));
-    setIsOtpSubmitted(true);
+    try {
+      setIsOtpLoading(true);
+      const otpArray = inputRefs.current.map((e) => e.value);
+      setOtp(otpArray.join(""));
+      setIsOtpSubmitted(true);
+    } catch (err) {
+      toast.error("Error verifying OTP");
+    } finally {
+      setIsOtpLoading(false);
+    }
   };
 
   //   new password handler
   const onSubmitNewPassword = async (e) => {
     e.preventDefault();
     try {
+      setIsPasswordLoading(true);
       const { data } = await axios.post(
         backendUrl + "/api/auth/reset-password",
         { email, otp, newPassword }
@@ -79,11 +105,18 @@ const ResetPassword = () => {
       data.success && navigate("/");
     } catch (err) {
       toast.error(err.message);
+    } finally {
+      setIsPasswordLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-900 via-pink-900 to-purple-900 relative overflow-hidden">
+      {/* Progress Bar */}
+      <ProgressBar
+        isLoading={isEmailLoading || isOtpLoading || isPasswordLoading}
+      />
+
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-96 h-96 bg-rose-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
@@ -170,12 +203,18 @@ const ResetPassword = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isEmailLoading}
                 />
               </div>
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-rose-500/50 relative overflow-hidden group cursor-pointer">
+            <button
+              disabled={isEmailLoading}
+              className={`w-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-rose-500/50 relative overflow-hidden group cursor-pointer ${
+                isEmailLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
               <span className="relative z-10 flex items-center justify-center space-x-2 text-lg">
                 <svg
                   className="w-5 h-5"
@@ -190,7 +229,7 @@ const ResetPassword = () => {
                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   />
                 </svg>
-                <span>Send Reset Code</span>
+                <span>{isEmailLoading ? "Sending..." : "Send Reset Code"}</span>
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
             </button>
@@ -244,10 +283,13 @@ const ResetPassword = () => {
                         type="text"
                         maxLength="1"
                         required
+                        disabled={isOtpLoading}
                         ref={(e) => (inputRefs.current[index] = e)}
                         onInput={(e) => handleInput(e, index)}
                         onKeyDown={(e) => handleKeyDown(e, index)}
-                        className="w-14 h-14 max-sm:w-10 max-sm:h-10 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white text-center text-2xl font-bold rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-rose-400 transition-all duration-300 hover:bg-white/20 group-hover:border-rose-300"
+                        className={`w-14 h-14 max-sm:w-10 max-sm:h-10 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white text-center text-2xl font-bold rounded-2xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-rose-400 transition-all duration-300 hover:bg-white/20 group-hover:border-rose-300 ${
+                          isOtpLoading ? "opacity-50" : ""
+                        }`}
                       />
                       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-rose-400/20 to-pink-400/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                     </div>
@@ -259,7 +301,12 @@ const ResetPassword = () => {
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-rose-500/50 relative overflow-hidden group cursor-pointer">
+            <button
+              disabled={isOtpLoading}
+              className={`w-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-rose-500/50 relative overflow-hidden group cursor-pointer ${
+                isOtpLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
               <span className="relative z-10 flex items-center justify-center space-x-2 text-lg">
                 <svg
                   className="w-5 h-5"
@@ -274,7 +321,7 @@ const ResetPassword = () => {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span>Verify Code</span>
+                <span>{isOtpLoading ? "Verifying..." : "Verify Code"}</span>
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
             </button>
@@ -330,12 +377,18 @@ const ResetPassword = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
+                  disabled={isPasswordLoading}
                 />
               </div>
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-rose-500/50 relative overflow-hidden group cursor-pointer">
+            <button
+              disabled={isPasswordLoading}
+              className={`w-full bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 hover:from-rose-600 hover:via-pink-600 hover:to-purple-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-rose-500/50 relative overflow-hidden group cursor-pointer ${
+                isPasswordLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
               <span className="relative z-10 flex items-center justify-center space-x-2 text-lg">
                 <svg
                   className="w-5 h-5"
@@ -350,7 +403,9 @@ const ResetPassword = () => {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span>Reset Password</span>
+                <span>
+                  {isPasswordLoading ? "Resetting..." : "Reset Password"}
+                </span>
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
             </button>

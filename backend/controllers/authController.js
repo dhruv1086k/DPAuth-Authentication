@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/UserModel.js";
-import { verifyOTP } from "../utils/mail_temp.js";
+import { resetOTP, verifyOTP } from "../utils/mail_temp.js";
 import transporter from "../config/nodeMailer.js";
 
 // ==================================== Controller function for User Register ====================================
@@ -244,6 +244,7 @@ export const sendResetOtp = async (req, res) => {
         ${otp}
         Use this code to reset your account password. It’s valid for the next 10 minutes.
         If you didn’t request this, please ignore this email.`,
+      html: `${resetOTP.replace("{{OTP}}", otp)}`,
     };
 
     await transporter.sendMail(mailOptions);
