@@ -149,7 +149,7 @@ const EmailVerify = () => {
                       ref={(e) => (inputRefs.current[index] = e)}
                       onInput={(e) => handleInput(e, index)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
-                      className="w-14 h-14 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white text-center text-2xl font-bold rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 hover:bg-white/20 group-hover:border-emerald-300"
+                      className="w-14 h-14 max-sm:w-10 max-sm:h-10 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white text-center text-2xl font-bold rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 hover:bg-white/20 group-hover:border-emerald-300"
                     />
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-400/20 to-teal-400/20 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
