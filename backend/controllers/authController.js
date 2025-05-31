@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/UserModel.js";
+import { verifyOTP } from "../utils/mail_temp.js";
 import transporter from "../config/nodeMailer.js";
 
 // ==================================== Controller function for User Register ====================================
@@ -151,10 +152,11 @@ export const sendVerifyOtp = async (req, res) => {
       to: user.email,
       subject: "Your DPAuth OTP Code",
       text: `Hi there,
-        Your One-Time Password (OTP) is:
-        ${otp}
-        Use this code to verify your account. It’s valid for the next 10 minutes.
-        If you didn’t request this, please ignore this email.`,
+    Your One-Time Password (OTP) is:
+    ${otp}
+    Use this code to verify your account. It's valid for the next 10 minutes.
+    If you didn't request this, please ignore this email.`,
+      html: `${verifyOTP.replace("{{OTP}}", otp)}`,
     };
 
     await transporter.sendMail(mailOptions);
